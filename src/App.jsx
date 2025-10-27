@@ -1,19 +1,33 @@
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css'
-import Header from './components/header'
-import ProductCard from './components/product-card'
+import AdminPage from './pages/adminPage'
+import LoginPage from './pages/loginPage'
+import TestingPage from './pages/testingPage'
+import { Toaster } from 'react-hot-toast'
 
 function App() {
 
   return (
     <>
+    
+      <BrowserRouter>
+      <Toaster position="top-right"/>
 
-    <div className="w-full h-screen bg-orange-950">
-      <div className="w-full h-screen bg-green-300 flex flex-col justify-center items-center" >
-        <div className="w-[90px] h-[90px] bg-red-600"></div>
-        <div className="w-[90px] h-[90px] bg-blue-600 fixed right-[50px] bottom-[50px]"> </div>
-        <div className="w-[90px] h-[90px] bg-yellow-300 absolute right-[50px] bottom-[50px]"></div>
-      </div>
-    </div>
+        <Routes path="/*">
+
+          <Route path="/" element={<h1>Home page</h1>}/>
+          <Route path="/login" element={<LoginPage/>}/>
+          <Route path="/admin/*" element={<AdminPage/>}/>
+          <Route path="/*" element={<h1>404 not found</h1>}/>
+          <Route path="/testing" element={<TestingPage/>}/>
+
+        </Routes>
+      
+      
+      
+      </BrowserRouter>
+
+    
     </>
   )
 }
