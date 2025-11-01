@@ -1,24 +1,36 @@
 import axios from "axios";
-import { useState } from "react";
+import { use, useState } from "react";
 import toast from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
-export default function AddProductForm(){
+export default function UpdateProductForm(){
 
-    const [productId,setProductId]=useState("");
-    const [productName,setProductName]=useState("");
-    const [alternativeProductNames,setAlternativeProductNames]=useState("");
-    const [productPrice,setProductPrice]=useState("");
-    const [productLabelPrice,setProductLabelPrice]=useState("");
-    const [productDescription,setProductDescription]=useState("");
-    const [productStockQuentity,setProductStockQuentity]=useState("");
+    const locationData=useLocation();
+    const navigate=useNavigate()
+    console.log(locationData)
+    if(locationData.state==null){
+        toast.error("Please select a product to edit")
+        window.location.href="/admin/products"
+
+
+    }
+
+
+    const [productId,setProductId]=useState(locationData.state.productId);
+    const [productName,setProductName]=useState(locationData.state.name);
+    const [alternativeProductNames,setAlternativeProductNames]=useState(locationData.state.altNames.join(","));
+    const [productPrice,setProductPrice]=useState(locationData.state.price);
+    const [productLabelPrice,setProductLabelPrice]=useState(locationData.state.labledPrice);
+    const [productDescription,setProductDescription]=useState(locationData.state.description);
+    const [productStockQuentity,setProductStockQuentity]=useState(locationData.state.stock);
     const [images,setImages]=useState([]);
-    const navigate=useNavigate();
+   
 
     async function handleSubmit(){
 
-        const promisesArray=[]
 
+
+        const promisesArray=[]
 
         for(let i=0; i<images.length;i++){
 
@@ -29,62 +41,57 @@ export default function AddProductForm(){
 
         try{
 
+        
+
             //To run all the promises in one time
-            const result= await Promise.all(promisesArray)
+            let result= await Promise.all(promisesArray)
             console.log(result)
 
-
-
+            if(images.length==0){
+                result=locationData.state.images
+            }
 
             const alternativeNamesInArray=alternativeProductNames.split(",")
             const product={
-                productId:productId,
                 name:productName,
                 altNames:alternativeNamesInArray,
                 price:productPrice,
                 labledPrice:productLabelPrice,
                 description:productDescription,
                 stock:productStockQuentity,
-                images:[
-                    "https://picsum.photos/id/237/200/300",
-                    "https://picsum.photos/id/238/200/300",
-                    "https://picsum.photos/id/239/200/300"
-                ]
+                images:result,
             }
 
             //To get the users token from the local storage
             const token=localStorage.getItem("token")
 
-            await axios.post( import.meta.env.VITE_BACKEND_URL+"/api/product",product,
+            await axios.put( import.meta.env.VITE_BACKEND_URL+"/api/product/"+productId,product,
                 {
                     headers:{
                         "Authorization":token
                     }
                 }
             )
-            toast.success("Product added successfully...");
+            toast.success("Product updated successfully...");
             navigate("/admin/products");
         
 
         }catch(error){
             console.log(error)
-            toast.error("Product adding failed..")
-        }
-        
 
-        
+            toast.error("Product updating failed..")
+        }
+          
 
     }
-
-
-
 
     return(
         <div className="w-full h-full rounded-lg bg-blue-200 flex justify-center items-center">
             <div className="w-[500px] h-[600px] bg-blue-200 rounded-lg shadow-lg flex flex-col items-center ">
-                <h1 className="text-3xl font-bold text-gray-700 m-2.5">Add Product</h1>
+                <h1 className="text-3xl font-bold text-gray-700 m-2.5">Update Product</h1>
                 
                 <input 
+                    disabled
                     value={productId}
                     onChange={
                         (e)=>{
@@ -166,8 +173,6 @@ export default function AddProductForm(){
                 
                 />
 
-
-
                 <input 
                 value={productStockQuentity}
                     onChange={
@@ -183,17 +188,9 @@ export default function AddProductForm(){
                 
                 <div className="w-[400px] h-[100px] flex justify-between items-center rounded-lg">
                     <Link to={"/admin/products"} className="bg-red-500 text-white w-[180px] text-center p-[10px] rounded-lg  hover:bg-red-600 cursor-pointer">Cancel</Link>
-                    <button onClick={handleSubmit} className="bg-green-600 text-white w-[180px] text-center p-[10px] rounded-lg ml-[10px] hover:bg-red-600 cursor-pointer">Add Product</button>
-
-
+                    <button onClick={handleSubmit} className="bg-green-600 text-white w-[180px] text-center p-[10px] rounded-lg ml-[10px] hover:bg-red-600 cursor-pointer">Update Product</button>
                 </div>
-
-
-
-
-
-            </div>
-            
+            </div>   
         </div>
     )
 }

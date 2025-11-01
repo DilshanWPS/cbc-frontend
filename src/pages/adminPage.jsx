@@ -4,6 +4,7 @@ import { MdOutlineWarehouse } from "react-icons/md";
 import { GiShoppingCart } from "react-icons/gi";
 import AdminProductsPage from "./admin/product";
 import AddProductForm from "./admin/addProductForm";
+import UpdateProductForm from "./admin/updateProduct";
 
 export default function AdminPage(){
     return(
@@ -21,6 +22,7 @@ export default function AdminPage(){
                     <Route path="/products" element={<AdminProductsPage/>}/>
                     <Route path="/orders" element={<h1>Orders</h1>}/>
                     <Route path="/addProduct" element={<AddProductForm/>}/>
+                    <Route path="/updateProduct" element={<UpdateProductForm/>}/>
 
 
                 </Routes>
